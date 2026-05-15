@@ -48,12 +48,12 @@ func Load() {
 		// Images
 		StartPic: getEnv(
 			"START_PIC",
-			"https://files.tgvibes.online/uNCwWfdJ.jpg",
+			"https://files.tgvibes.online/5JreGgKB.jpg",
 		),
 
 		HelpPic: getEnv(
 			"HELP_PIC",
-			"https://files.tgvibes.online/uNCwWfdJ.jpg",
+			"https://files.tgvibes.online/5JreGgKB.jpg",
 		),
 	}
 
