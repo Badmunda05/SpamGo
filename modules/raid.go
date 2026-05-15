@@ -365,6 +365,8 @@ func getRaidList(raidType string) []string {
 		return config.ERAID
 	case "punraid":
 		return config.PUNRAID
+	case "praid":
+		return config.PORNTEXT
 	default:
 		return config.RAID
 	}
