@@ -1,0 +1,26 @@
+name: pbxspamgo
+
+services:
+  - name: pbxspamgo
+    type: web
+    ports:
+      - port: 8000
+        protocol: http
+
+    env:
+      - key: APP_ID
+        value: ""
+      - key: APP_HASH
+        value: ""
+      - key: OWNER_ID
+        value: ""
+      - key: BOT_TOKEN1
+        value: ""
+      - key: MONGO_URL
+        value: ""
+
+    build:
+      builder: dockerfile
+
+    run:
+      command: ./pbxspamgo
