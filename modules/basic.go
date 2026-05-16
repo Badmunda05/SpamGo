@@ -21,10 +21,6 @@ import (
 	Created By: BadMunda
 */
 
-// ─────────────────────────────────────────────
-// UI STRINGS
-// ─────────────────────────────────────────────
-
 var START_TEXT = `
 <b>ʜᴇʏ <a href="tg://user?id=%d">%s</a>,</b>
 
@@ -38,30 +34,33 @@ var START_TEXT = `
 » <b>ʟɪʙʀᴀʀʏ :</b> <code>gogram</code>
 
 ━━━━━━━━━━━━━━━━━━━
-🍹 <b>ᴜsᴇ /help ғᴏʀ ᴄᴏᴍᴍᴀɴᴅs</b>
+🍹 <b>ᴜsᴇ /help ꜰᴏʀ ᴄᴏᴍᴍᴀɴᴅs</b>
 `
 
 var HELP_TEXT = `
 ★ ᴘʙxsᴘᴀᴍ ɢᴏ ★
 
-» <b>ᴄʟɪᴄᴋ ᴏɴ ʙᴇʟᴏᴡ ʙᴜᴛᴛᴏɴꜱ ꜰᴏʀ ʜᴇʟᴘ</b>
+» <b>ᴄʟɪᴄᴋ ʙᴇʟᴏᴡ ʙᴜᴛᴛᴏɴs ꜰᴏʀ ʜᴇʟᴘ</b>
 » <b>ᴅᴇᴠᴇʟᴏᴘᴇʀ:</b> @BadmundaXd
 `
 
 var SPAM_TEXT = `
-<b>» ꜱᴘᴀᴍ ᴄᴏᴍᴍᴀɴᴅꜱ:</b>
+<b>» sᴘᴀᴍ ᴄᴏᴍᴍᴀɴᴅs:</b>
 
-<code>.spam 10 hello</code>
+<code>.spam [count] [text]</code>
 ➜ ɴᴏʀᴍᴀʟ sᴘᴀᴍ
 
-<code>.ds 1 10 hello</code>
+<code>.ds [delay] [count] [text]</code>
 ➜ ᴅᴇʟᴀʏ sᴘᴀᴍ
 
-<code>.sspam 10</code>
-➜ sᴛɪᴄᴋᴇʀ / ᴍᴇᴅɪᴀ sᴘᴀᴍ
+<code>.sspam [count]</code>
+➜ sᴛɪᴄᴋᴇʀ / ᴍᴇᴅɪᴀ sᴘᴀᴍ (ʀᴇᴘʟʏ)
 
-<code>.hang 10</code>
-➜ ʜᴀɴɢɪɴɢ sᴘᴀᴍ
+<code>.hang [count]</code>
+➜ ʜᴀɴɢ sᴘᴀᴍ
+
+<code>.pspam [count]</code>
+➜ ᴘᴏʀɴ ᴛᴇxᴛ sᴘᴀᴍ
 
 <code>.stopspam</code>
 ➜ sᴛᴏᴘ ᴀʟʟ sᴘᴀᴍ
@@ -71,21 +70,25 @@ var SPAM_TEXT = `
 `
 
 var RAID_TEXT = `
-<b>» ʀᴀɪᴅ ᴄᴏᴍᴍᴀɴᴅꜱ:</b>
+<b>» ʀᴀɪᴅ ᴄᴏᴍᴍᴀɴᴅs:</b>
 
-<code>.raid 20</code>
-<code>.hraid 20</code>
-<code>.eraid 20</code>
-<code>.punraid 20</code>
-➜ ʀᴀɴᴅᴏᴍ ʀᴀɪᴅs
+<code>.raid [count]</code>
+<code>.hraid [count]</code>
+<code>.eraid [count]</code>
+<code>.punraid [count]</code>
+<code>.praid [count]</code>
+➜ ɴᴏʀᴍᴀʟ ʀᴀɪᴅs
 
 ━━━━━━━━━━━━━━━━━
 
-<code>.replyraid 20</code>
-<code>.hreplyraid 20</code>
-<code>.ereplyraid 20</code>
-<code>.preplyraid 20</code>
-➜ ʀᴇᴘʟʏ ʀᴀɪᴅs
+<code>.replyraid [count]</code>
+<code>.hreplyraid [count]</code>
+<code>.ereplyraid [count]</code>
+<code>.preplyraid [count]</code>
+➜ ʀᴇᴘʟʏ ʀᴀɪᴅs (ʀᴇᴘʟʏ ᴛᴏ ᴜsᴇʀ)
+
+<code>.shayari [count]</code>
+➜ sʜᴀʏᴀʀɪ ʀᴀɪᴅ
 
 <code>.stopraid</code>
 ➜ sᴛᴏᴘ ᴀʟʟ ʀᴀɪᴅs
@@ -95,16 +98,13 @@ var RAID_TEXT = `
 `
 
 var EXTRA_TEXT = `
-<b>» ᴇxᴛʀᴀ ᴄᴏᴍᴍᴀɴᴅꜱ:</b>
+<b>» ᴇxᴛʀᴀ ᴄᴏᴍᴍᴀɴᴅs:</b>
 
 <code>.ping</code>
 ➜ ʙᴏᴛ ᴘɪɴɢ
 
 <code>.restart</code>
 ➜ ʀᴇsᴛᴀʀᴛ ʙᴏᴛ
-
-<code>.leave</code>
-➜ ʟᴇᴀᴠᴇ ɢʀᴏᴜᴘ
 
 <code>.logs</code>
 ➜ ꜰᴇᴛᴄʜ ʟᴏɢs
@@ -129,22 +129,12 @@ var EXTRA_TEXT = `
 func startKeyboard() *telegram.ReplyInlineMarkup {
 	return &telegram.ReplyInlineMarkup{
 		Rows: []*telegram.KeyboardButtonRow{
-			{
-				Buttons: []telegram.KeyboardButton{
-					telegram.Button.Data("• ᴄᴏᴍᴍᴀɴᴅs •", "help_back"),
-				},
-			},
-			{
-				Buttons: []telegram.KeyboardButton{
-					telegram.Button.URL("• ᴄʜᴀɴɴᴇʟ •", "https://t.me/PBX_UPDATE"),
-					telegram.Button.URL("• sᴜᴘᴘᴏʀᴛ •", "https://t.me/PBXCHATS"),
-				},
-			},
-			{
-				Buttons: []telegram.KeyboardButton{
-					telegram.Button.URL("• ʀᴇᴘᴏ •", "https://github.com/badmunda05"),
-				},
-			},
+			{Buttons: []telegram.KeyboardButton{telegram.Button.Data("• ᴄᴏᴍᴍᴀɴᴅs •", "help_back")}},
+			{Buttons: []telegram.KeyboardButton{
+				telegram.Button.URL("• ᴄʜᴀɴɴᴇʟ •", "https://t.me/PBX_UPDATE"),
+				telegram.Button.URL("• sᴜᴘᴘᴏʀᴛ •", "https://t.me/PBXCHATS"),
+			}},
+			{Buttons: []telegram.KeyboardButton{telegram.Button.URL("• ʀᴇᴘᴏ •", "https://github.com/badmunda05")}},
 		},
 	}
 }
@@ -152,28 +142,16 @@ func startKeyboard() *telegram.ReplyInlineMarkup {
 func helpKeyboard() *telegram.ReplyInlineMarkup {
 	return &telegram.ReplyInlineMarkup{
 		Rows: []*telegram.KeyboardButtonRow{
-			{
-				Buttons: []telegram.KeyboardButton{
-					telegram.Button.Data("• ꜱᴘᴀᴍ •", "spam_help"),
-					telegram.Button.Data("• ʀᴀɪᴅ •", "raid_help"),
-				},
-			},
-			{
-				Buttons: []telegram.KeyboardButton{
-					telegram.Button.Data("• ᴇxᴛʀᴀ •", "extra_help"),
-				},
-			},
-			{
-				Buttons: []telegram.KeyboardButton{
-					telegram.Button.URL("• ᴄʜᴀɴɴᴇʟ •", "https://t.me/PBX_UPDATE"),
-					telegram.Button.URL("• sᴜᴘᴘᴏʀᴛ •", "https://t.me/PBXCHATS"),
-				},
-			},
-			{
-				Buttons: []telegram.KeyboardButton{
-					telegram.Button.Data("• ʜᴏᴍᴇ •", "go_home"),
-				},
-			},
+			{Buttons: []telegram.KeyboardButton{
+				telegram.Button.Data("• sᴘᴀᴍ •", "spam_help"),
+				telegram.Button.Data("• ʀᴀɪᴅ •", "raid_help"),
+			}},
+			{Buttons: []telegram.KeyboardButton{telegram.Button.Data("• ᴇxᴛʀᴀ •", "extra_help")}},
+			{Buttons: []telegram.KeyboardButton{
+				telegram.Button.URL("• ᴄʜᴀɴɴᴇʟ •", "https://t.me/PBX_UPDATE"),
+				telegram.Button.URL("• sᴜᴘᴘᴏʀᴛ •", "https://t.me/PBXCHATS"),
+			}},
+			{Buttons: []telegram.KeyboardButton{telegram.Button.Data("• ʜᴏᴍᴇ •", "go_home")}},
 		},
 	}
 }
@@ -181,11 +159,7 @@ func helpKeyboard() *telegram.ReplyInlineMarkup {
 func homeKeyboard() *telegram.ReplyInlineMarkup {
 	return &telegram.ReplyInlineMarkup{
 		Rows: []*telegram.KeyboardButtonRow{
-			{
-				Buttons: []telegram.KeyboardButton{
-					telegram.Button.Data("• ʙᴀᴄᴋ •", "back_help"),
-				},
-			},
+			{Buttons: []telegram.KeyboardButton{telegram.Button.Data("• ʙᴀᴄᴋ •", "back_help")}},
 		},
 	}
 }
@@ -196,14 +170,9 @@ func homeKeyboard() *telegram.ReplyInlineMarkup {
 
 func startHandler(m *telegram.NewMessage) error {
 	text := fmt.Sprintf(START_TEXT, m.SenderID(), m.Sender.FirstName)
-	_, err := m.ReplyMedia(
-		config.AppConfig.StartPic,
-		&telegram.MediaOptions{
-			Caption:     text,
-			ReplyMarkup: startKeyboard(),
-			ParseMode:   telegram.HTML,
-		},
-	)
+	_, err := m.ReplyMedia(config.AppConfig.StartPic, &telegram.MediaOptions{
+		Caption: text, ReplyMarkup: startKeyboard(), ParseMode: telegram.HTML,
+	})
 	return err
 }
 
@@ -212,14 +181,9 @@ func startHandler(m *telegram.NewMessage) error {
 // ─────────────────────────────────────────────
 
 func helpHandler(m *telegram.NewMessage) error {
-	_, err := m.ReplyMedia(
-		config.AppConfig.HelpPic,
-		&telegram.MediaOptions{
-			Caption:     HELP_TEXT,
-			ReplyMarkup: helpKeyboard(),
-			ParseMode:   telegram.HTML,
-		},
-	)
+	_, err := m.ReplyMedia(config.AppConfig.HelpPic, &telegram.MediaOptions{
+		Caption: HELP_TEXT, ReplyMarkup: helpKeyboard(), ParseMode: telegram.HTML,
+	})
 	return err
 }
 
@@ -229,41 +193,19 @@ func helpHandler(m *telegram.NewMessage) error {
 
 func pingHandler(m *telegram.NewMessage) error {
 	start := time.Now()
-
-	msg, err := m.Reply("🍹 ᴘɪɴɢɪɴɢ...", &telegram.SendOptions{
-		ParseMode: telegram.HTML,
-	})
-
+	msg, err := m.Reply("🍹 ᴘɪɴɢɪɴɢ...", &telegram.SendOptions{ParseMode: telegram.HTML})
 	speed := time.Since(start).Milliseconds()
-
 	pingText := fmt.Sprintf(
 		"•[ 🍹 ᴘʙx sᴘᴀᴍ ɢᴏ 🍹 ]•\n\n"+
 			"» ᴘɪɴɢ  ➜ <code>%d ᴍs</code>\n"+
-			"» sᴛᴀᴛᴜs ➜ <code>ᴏɴʟɪɴᴇ ✅</code>",
-		speed,
-	)
-
+			"» sᴛᴀᴛᴜs ➜ <code>ᴏɴʟɪɴᴇ ✅</code>", speed)
 	if err != nil || msg == nil {
-		_, _ = m.Client.SendMessage(
-			m.ChatID(),
-			pingText,
-			&telegram.SendOptions{ParseMode: telegram.HTML},
-		)
+		_, _ = m.Client.SendMessage(m.ChatID(), pingText, &telegram.SendOptions{ParseMode: telegram.HTML})
 		return nil
 	}
-
-	_, editErr := msg.Edit(pingText, &telegram.SendOptions{
-		ParseMode: telegram.HTML,
-	})
-
-	if editErr != nil {
-		_, _ = m.Client.SendMessage(
-			m.ChatID(),
-			pingText,
-			&telegram.SendOptions{ParseMode: telegram.HTML},
-		)
+	if _, editErr := msg.Edit(pingText, &telegram.SendOptions{ParseMode: telegram.HTML}); editErr != nil {
+		_, _ = m.Client.SendMessage(m.ChatID(), pingText, &telegram.SendOptions{ParseMode: telegram.HTML})
 	}
-
 	return nil
 }
 
@@ -274,19 +216,15 @@ func pingHandler(m *telegram.NewMessage) error {
 func restartHandler(m *telegram.NewMessage) error {
 	_, _ = Reply(m, "🔄 <b>ʀᴇsᴛᴀʀᴛɪɴɢ ᴘʙx sᴘᴀᴍ ɢᴏ...</b>")
 	time.Sleep(1 * time.Second)
-
-	// Works with both: go run main.go and compiled binary
 	exe, err := os.Executable()
 	if err != nil {
 		exe = os.Args[0]
 	}
-
 	cmd := exec.Command(exe, os.Args[1:]...)
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
 	cmd.Stdin = os.Stdin
 	_ = cmd.Start()
-
 	os.Exit(0)
 	return nil
 }
@@ -297,25 +235,17 @@ func restartHandler(m *telegram.NewMessage) error {
 
 func logsHandler(m *telegram.NewMessage) error {
 	start := time.Now()
-
 	msg, _ := Reply(m, "⚡ ꜰᴇᴛᴄʜɪɴɢ ʟᴏɢs...")
-
 	cmd := exec.Command("bash", "-c", "pm2 logs --lines 150 --nostream 2>&1")
 	output, err := cmd.CombinedOutput()
-
 	if err != nil && len(output) == 0 {
 		if msg != nil {
-			_, _ = msg.Edit(
-				fmt.Sprintf("❌ ꜰᴀɪʟᴇᴅ ᴛᴏ ꜰᴇᴛᴄʜ ʟᴏɢs.\n\n<code>%s</code>", err.Error()),
-				nil,
-			)
+			_, _ = msg.Edit(fmt.Sprintf("❌ ꜰᴀɪʟᴇᴅ ᴛᴏ ꜰᴇᴛᴄʜ ʟᴏɢs.\n\n<code>%s</code>", err.Error()), nil)
 		}
 		return nil
 	}
-
 	fileName := "PbxLogs.txt"
 	logText := fmt.Sprintf("⚡ PBXGO BOT LOGS ⚡\n\n%s", string(output))
-
 	if writeErr := os.WriteFile(fileName, []byte(logText), 0644); writeErr != nil {
 		if msg != nil {
 			_, _ = msg.Edit("❌ ꜰᴀɪʟᴇᴅ ᴛᴏ ᴡʀɪᴛᴇ ʟᴏɢs ꜰɪʟᴇ.", nil)
@@ -323,27 +253,13 @@ func logsHandler(m *telegram.NewMessage) error {
 		return nil
 	}
 	defer os.Remove(fileName)
-
 	taken := time.Since(start).Seconds()
-	caption := fmt.Sprintf(
-		"⚡ <b>ᴘʙxɢᴏ ʟᴏɢs</b> ⚡\n» <b>ᴛɪᴍᴇ ᴛᴀᴋᴇɴ:</b> <code>%.0f sᴇᴄ</code>",
-		taken,
-	)
-
-	_, sendErr := m.Client.SendMedia(m.ChatID(), fileName, &telegram.MediaOptions{
-		Caption:   caption,
-		ParseMode: telegram.HTML,
-	})
-	if sendErr != nil {
-		if strings.Contains(strings.ToUpper(sendErr.Error()), "FLOOD_WAIT") {
-			time.Sleep(5 * time.Second)
-			_, _ = m.Client.SendMedia(m.ChatID(), fileName, &telegram.MediaOptions{
-				Caption:   caption,
-				ParseMode: telegram.HTML,
-			})
-		}
+	caption := fmt.Sprintf("⚡ <b>ᴘʙxɢᴏ ʟᴏɢs</b> ⚡\n» <b>ᴛɪᴍᴇ ᴛᴀᴋᴇɴ:</b> <code>%.0f sᴇᴄ</code>", taken)
+	_, sendErr := m.Client.SendMedia(m.ChatID(), fileName, &telegram.MediaOptions{Caption: caption, ParseMode: telegram.HTML})
+	if sendErr != nil && strings.Contains(strings.ToUpper(sendErr.Error()), "FLOOD_WAIT") {
+		time.Sleep(5 * time.Second)
+		_, _ = m.Client.SendMedia(m.ChatID(), fileName, &telegram.MediaOptions{Caption: caption, ParseMode: telegram.HTML})
 	}
-
 	if msg != nil {
 		_, _ = msg.Delete()
 	}
@@ -359,9 +275,7 @@ func addSudoHandler(m *telegram.NewMessage) error {
 		_, _ = Reply(m, "❌ <b>ᴏɴʟʏ ᴏᴡɴᴇʀ ᴄᴀɴ ᴀᴅᴅ sᴜᴅᴏ ᴜsᴇʀs.</b>")
 		return nil
 	}
-
 	var targetID int64
-
 	if m.IsReply() {
 		replyMsg, err := m.GetReplyMessage()
 		if err != nil || replyMsg == nil {
@@ -382,12 +296,10 @@ func addSudoHandler(m *telegram.NewMessage) error {
 		}
 		targetID = parsed
 	}
-
 	if targetID == config.AppConfig.OwnerID {
 		_, _ = Reply(m, "ℹ️ ᴏᴡɴᴇʀ ɪs ᴀʟʀᴇᴀᴅʏ sᴜᴘᴇʀ ᴀᴅᴍɪɴ.")
 		return nil
 	}
-
 	database.AddSudo(targetID)
 	_, _ = Reply(m, fmt.Sprintf("✅ <b>ᴜsᴇʀ <code>%d</code> ᴀᴅᴅᴇᴅ ᴛᴏ sᴜᴅᴏ ʟɪsᴛ.</b>", targetID))
 	return nil
@@ -402,9 +314,7 @@ func rmSudoHandler(m *telegram.NewMessage) error {
 		_, _ = Reply(m, "❌ <b>ᴏɴʟʏ ᴏᴡɴᴇʀ ᴄᴀɴ ʀᴇᴍᴏᴠᴇ sᴜᴅᴏ ᴜsᴇʀs.</b>")
 		return nil
 	}
-
 	var targetID int64
-
 	if m.IsReply() {
 		replyMsg, err := m.GetReplyMessage()
 		if err != nil || replyMsg == nil {
@@ -425,12 +335,10 @@ func rmSudoHandler(m *telegram.NewMessage) error {
 		}
 		targetID = parsed
 	}
-
 	if targetID == config.AppConfig.OwnerID {
 		_, _ = Reply(m, "❌ ᴄᴀɴɴᴏᴛ ʀᴇᴍᴏᴠᴇ ᴏᴡɴᴇʀ ꜰʀᴏᴍ sᴜᴅᴏ.")
 		return nil
 	}
-
 	database.RemoveSudo(targetID)
 	_, _ = Reply(m, fmt.Sprintf("✅ <b>ᴜsᴇʀ <code>%d</code> ʀᴇᴍᴏᴠᴇᴅ ꜰʀᴏᴍ sᴜᴅᴏ ʟɪsᴛ.</b>", targetID))
 	return nil
@@ -442,18 +350,15 @@ func rmSudoHandler(m *telegram.NewMessage) error {
 
 func sudoListHandler(m *telegram.NewMessage) error {
 	list := database.FetchSudoList()
-
 	if len(list) == 0 {
 		_, _ = Reply(m, "ℹ️ <b>ɴᴏ sᴜᴅᴏ ᴜsᴇʀs ᴀᴅᴅᴇᴅ ʏᴇᴛ.</b>")
 		return nil
 	}
-
 	text := "👑 <b>sᴜᴅᴏ ᴜsᴇʀs ʟɪsᴛ:</b>\n\n"
 	for i, uid := range list {
 		text += fmt.Sprintf("%d. <code>%d</code>\n", i+1, uid)
 	}
 	text += fmt.Sprintf("\n<b>ᴛᴏᴛᴀʟ:</b> <code>%d</code>", len(list))
-
 	_, _ = Reply(m, text)
 	return nil
 }
@@ -464,44 +369,22 @@ func sudoListHandler(m *telegram.NewMessage) error {
 
 func callbackHandler(c *telegram.CallbackQuery) error {
 	data := c.DataString()
-
 	switch data {
-
 	case "help_back":
-		c.Edit(HELP_TEXT, &telegram.SendOptions{
-			ParseMode:   telegram.HTML,
-			ReplyMarkup: helpKeyboard(),
-		})
+		c.Edit(HELP_TEXT, &telegram.SendOptions{ParseMode: telegram.HTML, ReplyMarkup: helpKeyboard()})
 		c.Answer("")
-
 	case "spam_help":
-		c.Edit(SPAM_TEXT, &telegram.SendOptions{
-			ParseMode:   telegram.HTML,
-			ReplyMarkup: homeKeyboard(),
-		})
+		c.Edit(SPAM_TEXT, &telegram.SendOptions{ParseMode: telegram.HTML, ReplyMarkup: homeKeyboard()})
 		c.Answer("")
-
 	case "raid_help":
-		c.Edit(RAID_TEXT, &telegram.SendOptions{
-			ParseMode:   telegram.HTML,
-			ReplyMarkup: homeKeyboard(),
-		})
+		c.Edit(RAID_TEXT, &telegram.SendOptions{ParseMode: telegram.HTML, ReplyMarkup: homeKeyboard()})
 		c.Answer("")
-
 	case "extra_help":
-		c.Edit(EXTRA_TEXT, &telegram.SendOptions{
-			ParseMode:   telegram.HTML,
-			ReplyMarkup: homeKeyboard(),
-		})
+		c.Edit(EXTRA_TEXT, &telegram.SendOptions{ParseMode: telegram.HTML, ReplyMarkup: homeKeyboard()})
 		c.Answer("")
-
 	case "back_help":
-		c.Edit(HELP_TEXT, &telegram.SendOptions{
-			ParseMode:   telegram.HTML,
-			ReplyMarkup: helpKeyboard(),
-		})
+		c.Edit(HELP_TEXT, &telegram.SendOptions{ParseMode: telegram.HTML, ReplyMarkup: helpKeyboard()})
 		c.Answer("")
-
 	case "go_home":
 		sender, _ := c.GetSender()
 		name := "ᴜsᴇʀ"
@@ -509,14 +392,9 @@ func callbackHandler(c *telegram.CallbackQuery) error {
 		if sender != nil {
 			name = sender.FirstName
 		}
-		homeText := fmt.Sprintf(START_TEXT, id, name)
-		c.Edit(homeText, &telegram.SendOptions{
-			ParseMode:   telegram.HTML,
-			ReplyMarkup: startKeyboard(),
-		})
+		c.Edit(fmt.Sprintf(START_TEXT, id, name), &telegram.SendOptions{ParseMode: telegram.HTML, ReplyMarkup: startKeyboard()})
 		c.Answer("")
 	}
-
 	return nil
 }
 

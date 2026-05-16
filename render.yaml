@@ -1,0 +1,17 @@
+services:
+  - type: worker
+    name: pbxspamgo
+    runtime: go
+    buildCommand: go build -o pbxspamgo .
+    startCommand: ./pbxspamgo
+    envVars:
+      - key: APP_ID
+        sync: false
+      - key: APP_HASH
+        sync: false
+      - key: OWNER_ID
+        sync: false
+      - key: BOT_TOKEN1
+        sync: false
+      - key: MONGO_URL
+        sync: false

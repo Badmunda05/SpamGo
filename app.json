@@ -1,0 +1,54 @@
+{
+  "name": "PbxSpamGo",
+  "description": "PbxGo Multi-Bot Spam Tool built with Go + gogram",
+  "repository": "https://github.com/badmunda05/SpamGo",
+  "logo": "https://files.tgvibes.online/5JreGgKB.jpg",
+  "keywords": ["telegram", "bot", "go", "spam"],
+  "env": {
+    "APP_ID": {
+      "description": "Telegram API ID from my.telegram.org",
+      "required": true
+    },
+    "APP_HASH": {
+      "description": "Telegram API Hash from my.telegram.org",
+      "required": true
+    },
+    "OWNER_ID": {
+      "description": "Your Telegram User ID",
+      "required": true
+    },
+    "BOT_TOKEN1": {
+      "description": "First bot token from @BotFather",
+      "required": true
+    },
+    "BOT_TOKEN2": {
+      "description": "Second bot token (optional)",
+      "required": false
+    },
+    "MONGO_URL": {
+      "description": "MongoDB connection URL (optional, for sudo persistence)",
+      "required": false
+    },
+    "START_PIC": {
+      "description": "Start command image URL",
+      "required": false,
+      "value": "https://files.tgvibes.online/5JreGgKB.jpg"
+    },
+    "HELP_PIC": {
+      "description": "Help command image URL",
+      "required": false,
+      "value": "https://files.tgvibes.online/5JreGgKB.jpg"
+    }
+  },
+  "buildpacks": [
+    {
+      "url": "https://github.com/heroku/heroku-buildpack-go"
+    }
+  ],
+  "formation": {
+    "worker": {
+      "quantity": 1,
+      "size": "free"
+    }
+  }
+}
