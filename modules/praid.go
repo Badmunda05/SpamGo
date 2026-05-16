@@ -12,12 +12,12 @@ import (
 )
 
 /*
-	PbxGo Porn Module
-	Created By: BadMunda
+PbxGo Porn Module
+Created By: BadMunda
 */
 
 // ─────────────────────────────────────────────
-// Porn Reply Raid Watcher — separate from normal raid
+// Porn Reply Raid Watcher
 // ─────────────────────────────────────────────
 
 type pornWatcherSession struct {
@@ -30,7 +30,7 @@ var (
 )
 
 // ─────────────────────────────────────────────
-// .pspam — porn text spam only
+// .pspam — ONLY Porn Video Spam (No Text)
 // ─────────────────────────────────────────────
 
 func pspamHandler(m *telegram.NewMessage) error {
@@ -41,7 +41,7 @@ func pspamHandler(m *telegram.NewMessage) error {
 		count = 5
 	}
 
-	// Fetch reply ID BEFORE Delete
+	// Fetch reply ID
 	var replyToID int32
 	if m.IsReply() {
 		if replyMsg, err := m.GetReplyMessage(); err == nil && replyMsg != nil {
@@ -59,27 +59,31 @@ func pspamHandler(m *telegram.NewMessage) error {
 		if !isSpamActive(m.ChatID()) {
 			break
 		}
-		msg := config.PORNTEXT[rng.Intn(len(config.PORNTEXT))]
-		opts := &telegram.SendOptions{ParseMode: telegram.HTML}
+
+		videoURL := config.PORNVIDEOS[rng.Intn(len(config.PORNVIDEOS))]
+
+		videoOpts := &telegram.MediaOptions{}
 		if replyToID > 0 {
-			opts.ReplyID = replyToID
+			videoOpts.ReplyID = replyToID
 		}
-		_, err := m.Client.SendMessage(m.ChatID(), msg, opts)
+
+		_, err := m.Client.SendMedia(m.ChatID(), videoURL, videoOpts)
 		if err != nil {
 			if handleFlood(err) {
 				i--
 				continue
 			}
-			time.Sleep(2 * time.Second)
+			time.Sleep(3 * time.Second)
 			continue
 		}
-		time.Sleep(700 * time.Millisecond)
+
+		time.Sleep(900 * time.Millisecond) // good delay for video spam
 	}
 	return nil
 }
 
 // ─────────────────────────────────────────────
-// .praid — har iteration: 1 text + 1 video dono
+// .praid — Video + Text (Caption) Combined
 // ─────────────────────────────────────────────
 
 func praidHandler(m *telegram.NewMessage) error {
@@ -91,7 +95,7 @@ func praidHandler(m *telegram.NewMessage) error {
 		return nil
 	}
 
-	// Fetch reply ID BEFORE Delete
+	// Fetch reply ID
 	var replyToID int32
 	if m.IsReply() {
 		if replyMsg, err := m.GetReplyMessage(); err == nil && replyMsg != nil {
@@ -110,34 +114,19 @@ func praidHandler(m *telegram.NewMessage) error {
 			break
 		}
 
-		// Step 1: text bhejo
-		textMsg := config.PORNTEXT[rng.Intn(len(config.PORNTEXT))]
-		textOpts := &telegram.SendOptions{ParseMode: telegram.HTML}
-		if replyToID > 0 {
-			textOpts.ReplyID = replyToID
-		}
-		_, err := m.Client.SendMessage(m.ChatID(), textMsg, textOpts)
-		if err != nil {
-			if handleFlood(err) {
-				i--
-				continue
-			}
-			time.Sleep(2 * time.Second)
-			continue
-		}
-		time.Sleep(400 * time.Millisecond)
-
-		if !isRaidActive(m.ChatID()) {
-			break
-		}
-
-		// Step 2: video bhejo
+		text := config.PORNTEXT[rng.Intn(len(config.PORNTEXT))]
 		videoURL := config.PORNVIDEOS[rng.Intn(len(config.PORNVIDEOS))]
-		videoOpts := &telegram.MediaOptions{}
+
+		videoOpts := &telegram.MediaOptions{
+			Caption:   text,
+			ParseMode: telegram.HTML,
+		}
+
 		if replyToID > 0 {
 			videoOpts.ReplyID = replyToID
 		}
-		_, err = m.Client.SendMedia(m.ChatID(), videoURL, videoOpts)
+
+		_, err := m.Client.SendMedia(m.ChatID(), videoURL, videoOpts)
 		if err != nil {
 			if handleFlood(err) {
 				i--
@@ -146,14 +135,14 @@ func praidHandler(m *telegram.NewMessage) error {
 			time.Sleep(3 * time.Second)
 			continue
 		}
-		time.Sleep(800 * time.Millisecond)
+
+		time.Sleep(1300 * time.Millisecond)
 	}
 	return nil
 }
 
 // ─────────────────────────────────────────────
-// .preplyraid — watcher mode
-// Target user jdo msg kare: 1 text + 1 video reply vich, fir band
+// .preplyraid — Watcher (Video + Text Reply)
 // ─────────────────────────────────────────────
 
 func pornReplyRaidHandler(m *telegram.NewMessage) error {
@@ -162,7 +151,6 @@ func pornReplyRaidHandler(m *telegram.NewMessage) error {
 		return nil
 	}
 
-	// Fetch BEFORE Delete
 	replyMsg, err := m.GetReplyMessage()
 	if err != nil || replyMsg == nil {
 		Reply(m, "❌ ꜰᴀɪʟᴇᴅ ᴛᴏ ɢᴇᴛ ʀᴇᴘʟɪᴇᴅ ᴍᴇssᴀɢᴇ.")
@@ -172,7 +160,6 @@ func pornReplyRaidHandler(m *telegram.NewMessage) error {
 	targetUserID := replyMsg.SenderID()
 	chatID := m.ChatID()
 
-	// Register in porn watcher map
 	pornWatchersMu.Lock()
 	pornWatchers[chatID] = pornWatcherSession{targetUserID: targetUserID}
 	pornWatchersMu.Unlock()
@@ -185,8 +172,7 @@ func pornReplyRaidHandler(m *telegram.NewMessage) error {
 	return nil
 }
 
-// TriggerPReplyRaidIfActive — module.go har msg te call karda hai
-// Jdo target user msg kare: 1 text + 1 video reply, fir watcher band
+// Trigger on target message
 func TriggerPReplyRaidIfActive(m *telegram.NewMessage) {
 	chatID := m.ChatID()
 	senderID := m.SenderID()
@@ -199,25 +185,21 @@ func TriggerPReplyRaidIfActive(m *telegram.NewMessage) {
 		return
 	}
 
-	// Stop watcher — fire only once
+	// Stop watcher
 	pornWatchersMu.Lock()
 	delete(pornWatchers, chatID)
 	pornWatchersMu.Unlock()
 
 	rng := rand.New(rand.NewSource(time.Now().UnixNano()))
 
-	// 1 text reply
-	textMsg := config.PORNTEXT[rng.Intn(len(config.PORNTEXT))]
-	_, _ = m.Client.SendMessage(chatID, textMsg, &telegram.SendOptions{
+	text := config.PORNTEXT[rng.Intn(len(config.PORNTEXT))]
+	videoURL := config.PORNVIDEOS[rng.Intn(len(config.PORNVIDEOS))]
+
+	// Video with caption
+	_, _ = m.Client.SendMedia(chatID, videoURL, &telegram.MediaOptions{
+		Caption:   text,
 		ParseMode: telegram.HTML,
 		ReplyID:   int32(m.ID),
-	})
-	time.Sleep(400 * time.Millisecond)
-
-	// 1 video reply
-	videoURL := config.PORNVIDEOS[rng.Intn(len(config.PORNVIDEOS))]
-	_, _ = m.Client.SendMedia(chatID, videoURL, &telegram.MediaOptions{
-		ReplyID: int32(m.ID),
 	})
 }
 
@@ -228,10 +210,10 @@ func TriggerPReplyRaidIfActive(m *telegram.NewMessage) {
 func init() {
 	Register(ModuleInfo{
 		Name:        "Porn",
-		Description: "Porn Text Spam + Text+Video Raid",
+		Description: "Porn Video Spam + Text+Video Raid",
 		Commands: []CommandInfo{
-			{Pattern: "pspam",      Handler: pspamHandler,     Sudo: true},
-			{Pattern: "praid",      Handler: praidHandler,      Sudo: true},
+			{Pattern: "pspam", Handler: pspamHandler, Sudo: true},
+			{Pattern: "praid", Handler: praidHandler, Sudo: true},
 			{Pattern: "preplyraid", Handler: pornReplyRaidHandler, Sudo: true},
 		},
 	})
