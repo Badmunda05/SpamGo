@@ -2,6 +2,12 @@
 
 # 🍹 PbxSpamGo
 
+<p align="center">
+<a href="https://t.me/PBXCHATS">
+<img src="https://files.tgvibes.online/5JreGgKB.jpg" width="600">
+</a>
+</p>
+
 **Multi-Bot Spam & Raid Tool — Built with Go + gogram**
 
 [![Go](https://img.shields.io/badge/Go-1.22+-00ADD8?style=flat&logo=go)](https://go.dev)
