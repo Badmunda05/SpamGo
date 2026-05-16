@@ -11,7 +11,7 @@ import (
 )
 
 /*
-	PbxGo Powerful Admin Tools + Cross Group Support
+	PbxGo Powerful Admin Tools
 	Created By: BadMunda
 */
 
@@ -43,7 +43,7 @@ func isPowerActive(chatID int64) bool {
 }
 
 // ─────────────────────────────────────────────
-// Generic Flood Handler
+// Flood Wait Helper
 // ─────────────────────────────────────────────
 
 func handlePowerFlood(err error) bool {
@@ -67,27 +67,28 @@ func handlePowerFlood(err error) bool {
 // Helper: Resolve Target Chat ID
 // ─────────────────────────────────────────────
 
-func getTargetChat(m *telegram.NewMessage) (int64, error) {
+func getTargetChatID(m *telegram.NewMessage) (int64, error) {
 	args := strings.TrimSpace(GetArgs(m))
-
 	if args == "" {
-		return m.ChatID(), nil // Current chat
+		return m.ChatID(), nil
 	}
-
-	// If numeric ID ( -100123456789 )
 	if id, err := strconv.ParseInt(args, 10, 64); err == nil {
 		return id, nil
 	}
-
-	// If username (@groupusername)
 	if strings.HasPrefix(args, "@") {
-		chat, err := m.Client.ResolveUsername(strings.TrimPrefix(args, "@"))
+		peer, err := m.Client.ResolvePeer(strings.TrimPrefix(args, "@"))
 		if err != nil {
-			return 0, err
+			return 0, fmt.Errorf("failed to resolve: %v", err)
 		}
-		return chat.ID(), nil
+		switch p := peer.(type) {
+		case *telegram.InputPeerChannel:
+			return p.ChannelID, nil
+		case *telegram.InputPeerChat:
+			return p.ChatID, nil
+		case *telegram.InputPeerUser:
+			return p.UserID, nil
+		}
 	}
-
 	return 0, fmt.Errorf("invalid group username or ID")
 }
 
@@ -96,21 +97,21 @@ func getTargetChat(m *telegram.NewMessage) (int64, error) {
 // ─────────────────────────────────────────────
 
 func banAllHandler(m *telegram.NewMessage) error {
-	targetID, err := getTargetChat(m)
+	targetID, err := getTargetChatID(m)
 	if err != nil {
-		Reply(m, "❌ Invalid group username or ID")
+		Reply(m, fmt.Sprintf("❌ %s", err.Error()))
 		return nil
 	}
 
 	_, _ = m.Delete()
-	setPowerActive(targetID) // Important: Use targetID for stop
+	setPowerActive(targetID)
 	defer setPowerStopped(targetID)
 
-	Reply(m, fmt.Sprintf("🔥 <b>ʙᴀɴᴀʟʟ sᴛᴀʀᴛᴇᴅ ɪɴ:</b> <code>%d</code>", targetID))
+	Reply(m, fmt.Sprintf("🔥 <b>ʙᴀɴᴀʟʟ sᴛᴀʀᴛᴇᴅ</b>\n» ᴄʜᴀᴛ: <code>%d</code>", targetID))
 
 	participants, err := m.Client.GetParticipants(targetID, nil)
 	if err != nil {
-		Reply(m, "❌ Failed to get participants. Bot must be admin there.")
+		Reply(m, "❌ ꜰᴀɪʟᴇᴅ ᴛᴏ ɢᴇᴛ ᴘᴀʀᴛɪᴄɪᴘᴀɴᴛs.")
 		return nil
 	}
 
@@ -119,12 +120,13 @@ func banAllHandler(m *telegram.NewMessage) error {
 		if !isPowerActive(targetID) {
 			break
 		}
-
-		if user.ID == m.Client.Me().ID || user.IsAdmin() || user.IsCreator() {
+		if user.Self || user.Bot {
 			continue
 		}
-
-		err := m.Client.BanMember(targetID, user.ID)
+		_, err := m.Client.EditBannedParticipant(targetID, user.ID, &telegram.ChatBannedRights{
+			ViewMessages: true,
+			UntilDate:    0,
+		})
 		if err != nil {
 			if handlePowerFlood(err) {
 				continue
@@ -132,24 +134,24 @@ func banAllHandler(m *telegram.NewMessage) error {
 			time.Sleep(2 * time.Second)
 			continue
 		}
-
 		count++
 		if count%10 == 0 {
-			Reply(m, fmt.Sprintf("✅ <b>Banned:</b> <code>%d</code> users", count))
+			Reply(m, fmt.Sprintf("✅ <b>ʙᴀɴɴᴇᴅ:</b> <code>%d</code>", count))
 		}
 		time.Sleep(800 * time.Millisecond)
 	}
-
-	Reply(m, fmt.Sprintf("🏁 <b>ʙᴀɴᴀʟʟ ᴄᴏᴍᴘʟᴇᴛᴇᴅ!</b>\nGroup: <code>%d</code>\nTotal Banned: <code>%d</code>", targetID, count))
+	Reply(m, fmt.Sprintf("🏁 <b>ʙᴀɴᴀʟʟ ᴅᴏɴᴇ!</b>\n» ᴛᴏᴛᴀʟ: <code>%d</code>", count))
 	return nil
 }
 
-// Similar changes applied to all other commands...
+// ─────────────────────────────────────────────
+// .unbanall
+// ─────────────────────────────────────────────
 
 func unbanAllHandler(m *telegram.NewMessage) error {
-	targetID, err := getTargetChat(m)
+	targetID, err := getTargetChatID(m)
 	if err != nil {
-		Reply(m, "❌ Invalid group username or ID")
+		Reply(m, fmt.Sprintf("❌ %s", err.Error()))
 		return nil
 	}
 
@@ -157,21 +159,23 @@ func unbanAllHandler(m *telegram.NewMessage) error {
 	setPowerActive(targetID)
 	defer setPowerStopped(targetID)
 
-	Reply(m, fmt.Sprintf("🔄 <b>ᴜɴʙᴀɴᴀʟʟ sᴛᴀʀᴛᴇᴅ ɪɴ:</b> <code>%d</code>", targetID))
+	Reply(m, fmt.Sprintf("🔄 <b>ᴜɴʙᴀɴᴀʟʟ sᴛᴀʀᴛᴇᴅ</b>\n» ᴄʜᴀᴛ: <code>%d</code>", targetID))
 
-	participants, err := m.Client.GetBanned(targetID)
+	// Get banned list using channel participants banned filter
+	participants, err := m.Client.GetParticipants(targetID, &telegram.ParticipantsOptions{
+		Filter: &telegram.ChannelParticipantsBanned{},
+	})
 	if err != nil {
-		Reply(m, "❌ Failed to get banned list.")
+		Reply(m, "❌ ꜰᴀɪʟᴇᴅ ᴛᴏ ɢᴇᴛ ʙᴀɴɴᴇᴅ ʟɪsᴛ.")
 		return nil
 	}
 
 	count := 0
-	for _, user := range participants {
+	for _, user := range participants.Users {
 		if !isPowerActive(targetID) {
 			break
 		}
-
-		err := m.Client.UnbanMember(targetID, user.ID)
+		_, err := m.Client.EditBannedParticipant(targetID, user.ID, &telegram.ChatBannedRights{})
 		if err != nil {
 			if handlePowerFlood(err) {
 				continue
@@ -182,15 +186,18 @@ func unbanAllHandler(m *telegram.NewMessage) error {
 		count++
 		time.Sleep(700 * time.Millisecond)
 	}
-
-	Reply(m, fmt.Sprintf("🏁 <b>ᴜɴʙᴀɴᴀʟʟ ᴄᴏᴍᴘʟᴇᴛᴇᴅ!</b>\nTotal Unbanned: <code>%d</code>", count))
+	Reply(m, fmt.Sprintf("🏁 <b>ᴜɴʙᴀɴᴀʟʟ ᴅᴏɴᴇ!</b>\n» ᴛᴏᴛᴀʟ: <code>%d</code>", count))
 	return nil
 }
 
+// ─────────────────────────────────────────────
+// .muteall
+// ─────────────────────────────────────────────
+
 func muteAllHandler(m *telegram.NewMessage) error {
-	targetID, err := getTargetChat(m)
+	targetID, err := getTargetChatID(m)
 	if err != nil {
-		Reply(m, "❌ Invalid group username or ID")
+		Reply(m, fmt.Sprintf("❌ %s", err.Error()))
 		return nil
 	}
 
@@ -198,11 +205,11 @@ func muteAllHandler(m *telegram.NewMessage) error {
 	setPowerActive(targetID)
 	defer setPowerStopped(targetID)
 
-	Reply(m, fmt.Sprintf("🔇 <b>ᴍᴜᴛᴇᴀʟʟ sᴛᴀʀᴛᴇᴅ ɪɴ:</b> <code>%d</code>", targetID))
+	Reply(m, fmt.Sprintf("🔇 <b>ᴍᴜᴛᴇᴀʟʟ sᴛᴀʀᴛᴇᴅ</b>\n» ᴄʜᴀᴛ: <code>%d</code>", targetID))
 
 	participants, err := m.Client.GetParticipants(targetID, nil)
 	if err != nil {
-		Reply(m, "❌ Failed to get participants.")
+		Reply(m, "❌ ꜰᴀɪʟᴇᴅ ᴛᴏ ɢᴇᴛ ᴘᴀʀᴛɪᴄɪᴘᴀɴᴛs.")
 		return nil
 	}
 
@@ -211,12 +218,13 @@ func muteAllHandler(m *telegram.NewMessage) error {
 		if !isPowerActive(targetID) {
 			break
 		}
-
-		if user.ID == m.Client.Me().ID || user.IsAdmin() || user.IsCreator() {
+		if user.Self || user.Bot {
 			continue
 		}
-
-		err := m.Client.RestrictMember(targetID, user.ID, &telegram.ChatPermissions{CanSendMessages: false})
+		_, err := m.Client.EditBannedParticipant(targetID, user.ID, &telegram.ChatBannedRights{
+			SendMessages: true,
+			UntilDate:    0,
+		})
 		if err != nil {
 			if handlePowerFlood(err) {
 				continue
@@ -224,22 +232,24 @@ func muteAllHandler(m *telegram.NewMessage) error {
 			time.Sleep(2 * time.Second)
 			continue
 		}
-
 		count++
 		if count%15 == 0 {
-			Reply(m, fmt.Sprintf("✅ <b>Muted:</b> <code>%d</code>", count))
+			Reply(m, fmt.Sprintf("✅ <b>ᴍᴜᴛᴇᴅ:</b> <code>%d</code>", count))
 		}
 		time.Sleep(900 * time.Millisecond)
 	}
-
-	Reply(m, fmt.Sprintf("🏁 <b>ᴍᴜᴛᴇᴀʟʟ ᴄᴏᴍᴘʟᴇᴛᴇᴅ!</b>\nTotal Muted: <code>%d</code>", count))
+	Reply(m, fmt.Sprintf("🏁 <b>ᴍᴜᴛᴇᴀʟʟ ᴅᴏɴᴇ!</b>\n» ᴛᴏᴛᴀʟ: <code>%d</code>", count))
 	return nil
 }
 
+// ─────────────────────────────────────────────
+// .unmuteall
+// ─────────────────────────────────────────────
+
 func unmuteAllHandler(m *telegram.NewMessage) error {
-	targetID, err := getTargetChat(m)
+	targetID, err := getTargetChatID(m)
 	if err != nil {
-		Reply(m, "❌ Invalid group username or ID")
+		Reply(m, fmt.Sprintf("❌ %s", err.Error()))
 		return nil
 	}
 
@@ -247,11 +257,11 @@ func unmuteAllHandler(m *telegram.NewMessage) error {
 	setPowerActive(targetID)
 	defer setPowerStopped(targetID)
 
-	Reply(m, fmt.Sprintf("🔊 <b>ᴜɴᴍᴜᴛᴇᴀʟʟ sᴛᴀʀᴛᴇᴅ ɪɴ:</b> <code>%d</code>", targetID))
+	Reply(m, fmt.Sprintf("🔊 <b>ᴜɴᴍᴜᴛᴇᴀʟʟ sᴛᴀʀᴛᴇᴅ</b>\n» ᴄʜᴀᴛ: <code>%d</code>", targetID))
 
 	participants, err := m.Client.GetParticipants(targetID, nil)
 	if err != nil {
-		Reply(m, "❌ Failed to get participants.")
+		Reply(m, "❌ ꜰᴀɪʟᴇᴅ ᴛᴏ ɢᴇᴛ ᴘᴀʀᴛɪᴄɪᴘᴀɴᴛs.")
 		return nil
 	}
 
@@ -260,12 +270,7 @@ func unmuteAllHandler(m *telegram.NewMessage) error {
 		if !isPowerActive(targetID) {
 			break
 		}
-
-		err := m.Client.RestrictMember(targetID, user.ID, &telegram.ChatPermissions{
-			CanSendMessages: true,
-			CanSendMedia:    true,
-			CanSendStickers: true,
-		})
+		_, err := m.Client.EditBannedParticipant(targetID, user.ID, &telegram.ChatBannedRights{})
 		if err != nil {
 			if handlePowerFlood(err) {
 				continue
@@ -276,15 +281,18 @@ func unmuteAllHandler(m *telegram.NewMessage) error {
 		count++
 		time.Sleep(800 * time.Millisecond)
 	}
-
-	Reply(m, fmt.Sprintf("🏁 <b>ᴜɴᴍᴜᴛᴇᴀʟʟ ᴄᴏᴍᴘʟᴇᴛᴇᴅ!</b>\nTotal Unmuted: <code>%d</code>", count))
+	Reply(m, fmt.Sprintf("🏁 <b>ᴜɴᴍᴜᴛᴇᴀʟʟ ᴅᴏɴᴇ!</b>\n» ᴛᴏᴛᴀʟ: <code>%d</code>", count))
 	return nil
 }
 
+// ─────────────────────────────────────────────
+// .kickall
+// ─────────────────────────────────────────────
+
 func kickAllHandler(m *telegram.NewMessage) error {
-	targetID, err := getTargetChat(m)
+	targetID, err := getTargetChatID(m)
 	if err != nil {
-		Reply(m, "❌ Invalid group username or ID")
+		Reply(m, fmt.Sprintf("❌ %s", err.Error()))
 		return nil
 	}
 
@@ -292,11 +300,11 @@ func kickAllHandler(m *telegram.NewMessage) error {
 	setPowerActive(targetID)
 	defer setPowerStopped(targetID)
 
-	Reply(m, fmt.Sprintf("👢 <b>ᴋɪᴄᴋᴀʟʟ sᴛᴀʀᴛᴇᴅ ɪɴ:</b> <code>%d</code>", targetID))
+	Reply(m, fmt.Sprintf("👢 <b>ᴋɪᴄᴋᴀʟʟ sᴛᴀʀᴛᴇᴅ</b>\n» ᴄʜᴀᴛ: <code>%d</code>", targetID))
 
 	participants, err := m.Client.GetParticipants(targetID, nil)
 	if err != nil {
-		Reply(m, "❌ Failed to get participants.")
+		Reply(m, "❌ ꜰᴀɪʟᴇᴅ ᴛᴏ ɢᴇᴛ ᴘᴀʀᴛɪᴄɪᴘᴀɴᴛs.")
 		return nil
 	}
 
@@ -305,12 +313,10 @@ func kickAllHandler(m *telegram.NewMessage) error {
 		if !isPowerActive(targetID) {
 			break
 		}
-
-		if user.ID == m.Client.Me().ID || user.IsAdmin() || user.IsCreator() {
+		if user.Self || user.Bot {
 			continue
 		}
-
-		err := m.Client.KickMember(targetID, user.ID)
+		err := m.Client.KickParticipant(targetID, user.ID)
 		if err != nil {
 			if handlePowerFlood(err) {
 				continue
@@ -318,15 +324,13 @@ func kickAllHandler(m *telegram.NewMessage) error {
 			time.Sleep(2 * time.Second)
 			continue
 		}
-
 		count++
 		if count%8 == 0 {
-			Reply(m, fmt.Sprintf("✅ <b>Kicked:</b> <code>%d</code>", count))
+			Reply(m, fmt.Sprintf("✅ <b>ᴋɪᴄᴋᴇᴅ:</b> <code>%d</code>", count))
 		}
 		time.Sleep(1000 * time.Millisecond)
 	}
-
-	Reply(m, fmt.Sprintf("🏁 <b>ᴋɪᴄᴋᴀʟʟ ᴄᴏᴍᴘʟᴇᴛᴇᴅ!</b>\nTotal Kicked: <code>%d</code>", count))
+	Reply(m, fmt.Sprintf("🏁 <b>ᴋɪᴄᴋᴀʟʟ ᴅᴏɴᴇ!</b>\n» ᴛᴏᴛᴀʟ: <code>%d</code>", count))
 	return nil
 }
 
@@ -335,8 +339,8 @@ func kickAllHandler(m *telegram.NewMessage) error {
 // ─────────────────────────────────────────────
 
 func stopPowerHandler(m *telegram.NewMessage) error {
-	// Stop both current and any active
 	setPowerStopped(m.ChatID())
+	_, _ = m.Delete()
 	Reply(m, "🛑 <b>ᴘᴏᴡᴇʀ ᴀᴄᴛɪᴏɴ sᴛᴏᴘᴘᴇᴅ!</b>")
 	return nil
 }
@@ -348,13 +352,13 @@ func stopPowerHandler(m *telegram.NewMessage) error {
 func init() {
 	Register(ModuleInfo{
 		Name:        "Powerful",
-		Description: "BanAll, KickAll, MuteAll with Cross-Group Support",
+		Description: "BanAll KickAll MuteAll with Cross-Group Support",
 		Commands: []CommandInfo{
-			{Pattern: "banall", Handler: banAllHandler, Sudo: true},
-			{Pattern: "unbanall", Handler: unbanAllHandler, Sudo: true},
-			{Pattern: "muteall", Handler: muteAllHandler, Sudo: true},
+			{Pattern: "banall",    Handler: banAllHandler,    Sudo: true},
+			{Pattern: "unbanall",  Handler: unbanAllHandler,  Sudo: true},
+			{Pattern: "muteall",   Handler: muteAllHandler,   Sudo: true},
 			{Pattern: "unmuteall", Handler: unmuteAllHandler, Sudo: true},
-			{Pattern: "kickall", Handler: kickAllHandler, Sudo: true},
+			{Pattern: "kickall",   Handler: kickAllHandler,   Sudo: true},
 			{Pattern: "stoppower", Handler: stopPowerHandler, Sudo: true},
 		},
 	})
