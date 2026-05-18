@@ -1,1 +1,1 @@
-worker: ./pbxspamgo
+worker: pbxgo
